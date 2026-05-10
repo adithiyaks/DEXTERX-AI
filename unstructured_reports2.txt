@@ -8,3 +8,25 @@ The deceased is a 55-year-old female discovered in her locked vehicle in a parki
 ---
 
 At 1600 hours, responding officers arrived at the residential address. The subject, a 34-year-old male, was found supine on the living room floor. According to the spouse, the subject was last seen alive and well this morning at approximately 2026-05-09T08:00:00 before she left for work. Upon examination, the subject exhibited a core hepatic body temperature of 81.5°F. The thermostat in the apartment was set to, and verified at, an ambient temperature of 68.0°F. Physical examination revealed full rigor mortis across all major muscle groups and fixed livor mortis on the posterior aspect of the body. Significant trauma was noted, specifically a deep, jagged laceration across the right carotid artery and defensive stab wounds on the forearms.
+
+----
+
+CASE FILE: OMNI-2026-OMEGA // INITIAL INCIDENT & FORENSIC TRIAGE REPORT
+
+At approximately 1530 hours, responding officers were dispatched to a high-rise penthouse belonging to the victim, Marcus Vance, a 38-year-old male. Upon entry, the victim was discovered deceased on the study floor. The primary witness and business partner, Elias Thorne, was present at the scene. Thorne's official statement claims he arrived at the penthouse for a meeting and found the body. Thorne adamantly stated on record that the victim was last seen alive and well this morning during a video call at exactly 2026-05-09T11:00:00.
+
+The initial medical examiner on site recorded the ambient room temperature at a stable 70.0°F. A core hepatic temperature reading of the victim yielded a body temp of 80.4°F. Physical examination reveals full, rigid rigor mortis across the upper extremities and fixed livor mortis pooling on the anterior torso, suggesting the body was moved post-mortem. Major trauma includes a fatal 6-inch laceration severing the left subclavian artery, alongside deep contusions on the right ulna indicative of defensive posturing.
+
+Scene technicians recovered a shattered smartwatch near the victim's hand and a blood-stained steel paperweight (suspected blunt weapon). Cyber forensics team pulled preliminary digital logs: The victim's mobile device (V_PHONE) registered its final network handshake with Cell Tower North-7 (TOWER_N7) at 03:14 AM. Furthermore, automated license plate readers connected to the building's basement camera (CCTV_BSMT) flagged an unregistered black SUV (SUSPECT_SUV) entering the perimeter at 03:15 AM.
+
+
+dataset
+-----
+
+CASE FILE: OMNI-2026-ECHO // WAREHOUSE HOMICIDE & DIGITAL TRIAGE
+
+At 1600 hours, responding units arrived at the rear loading dock of the Nexis Tech logistics warehouse. The victim, identified as 28-year-old software engineer David Chen, was found deceased behind a cluster of shipping pallets. The primary witness is the warehouse floor manager, Julian Vance, who reported finding the body. In his official statement, Vance claims that Chen was alive and working at his terminal this morning, stating he last saw the victim well at exactly 2026-05-09T09:30:00.
+
+The on-site medical examiner recorded the ambient loading dock temperature at a stable 72.0°F. The core hepatic temperature of the victim was recorded at 83.4°F. Physical examination revealed full rigor mortis across all major muscle groups. Notably, livor mortis was fully fixed on the anterior (front) torso, despite the body being discovered supine (on its back), indicating post-mortem manipulation and staging. Primary injuries include severe blunt force trauma to the occipital lobe and deep defensive lacerations on the right forearm.
+
+Cyber forensics immediately pulled the victim's digital footprint. The victim's mobile device (C_PHONE) registered a final network handshake with the local cell tower (TOWER_WEST) at 06:02 AM before going completely dark. Investigators secured the raw video feed from the exterior security camera (CAM_DOCK_OUTER) facing the rear exit, which oversees the area where the body was dumped.

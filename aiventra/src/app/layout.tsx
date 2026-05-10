@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Mono } from "next/font/google";
+import { Inter, Roboto_Mono, Geist } from "next/font/google";
 import { Activity } from "lucide-react";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,18 +29,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${robotoMono.variable} h-full antialiased dark`}
+      className={cn("h-full", "antialiased", "dark", inter.variable, robotoMono.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-50 selection:bg-cyan-500/30 selection:text-cyan-50">
         <header className="sticky top-0 z-50 flex items-center h-14 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-6">
-          <div className="flex items-center gap-2 text-cyan-400">
+          <div className="flex items-center gap-2 text-red-400">
             <Activity className="h-5 w-5" />
             <span className="font-semibold tracking-wider text-sm">
               DEXTERX AI <span className="text-slate-500 font-normal">| FORENSIC TRIAGE</span>
             </span>
           </div>
         </header>
-        <main className="flex-1 flex overflow-hidden">
+        <main className="flex-1 flex overflow-y-auto">
           {children}
         </main>
       </body>

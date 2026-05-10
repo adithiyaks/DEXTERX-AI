@@ -67,8 +67,8 @@ export function TodIntelligencePanel({ data }: Props) {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1/2 bg-red-600/10 blur-[50px] pointer-events-none" />
       )}
 
-      <div className="relative z-10 flex flex-col md:flex-row gap-8 mb-6">
-        {/* Left Col: Anomaly Score */}
+      <div className="relative z-10 flex flex-col gap-6 mb-6">
+        {/* Top: Anomaly Score */}
         <div className="flex flex-col items-start justify-center">
           <div className="flex items-center gap-2 mb-2">
             <IconComponent className={`h-4 w-4 ${theme.text}`} />
@@ -77,7 +77,7 @@ export function TodIntelligencePanel({ data }: Props) {
             </h3>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className={`text-6xl md:text-7xl font-mono font-bold tracking-tighter ${theme.text}`}>
+            <span className={`text-5xl font-mono font-bold tracking-tighter ${theme.text}`}>
               {data.anomaly_score}
             </span>
             <span className="text-slate-500 font-mono text-sm">/ 100</span>
@@ -89,19 +89,19 @@ export function TodIntelligencePanel({ data }: Props) {
           </div>
         </div>
 
-        {/* Right Col: Timeline & Estimated Window */}
-        <div className="flex-1 flex flex-col justify-center border-l border-slate-800 pl-8">
+        {/* Bottom: Timeline & Estimated Window */}
+        <div className="flex-1 flex flex-col justify-center border-t border-slate-800/50 pt-4">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="h-4 w-4 text-slate-400" />
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+            <h3 className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
               Estimated TOD Window
             </h3>
           </div>
-          <div className="text-2xl md:text-3xl font-mono text-slate-200 mb-1">
+          <div className="text-xl font-mono text-slate-200 mb-1 leading-tight break-words">
             {data.estimated_window}
           </div>
-          <p className="text-slate-500 font-mono text-xs">
-            Base calculated: {data.estimated_hours_elapsed} hrs ago (Confidence: {data.confidence_score}%)
+          <p className="text-slate-500 font-mono text-[10px] leading-relaxed mt-1">
+            Base calculated: {data.estimated_hours_elapsed} hrs ago <br className="hidden md:block" />(Confidence: {data.confidence_score}%)
           </p>
         </div>
       </div>
