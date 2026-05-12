@@ -10,8 +10,10 @@ import InjuryHotspot from '@/components/features/InjuryHotspot';
 const ANATOMY_COORDS: Record<string, [number, number, number]> = {
     "SKULL_FRONT": [-0.010301, 1.7662, 0.099223],
     "NECK_RIGHT": [0.070227, 1.5751, 0.059444],
-    "CHEST_LEFT": [-0.035492, 1.3699, 0.15878],
-    "FOREARM_LEFT": [-0.49641, 1.4452, 0.088437]
+    "CHEST_LEFT": [0.075492, 1.3699, 0.15878],
+    "FOREARM_LEFT": [-0.49641, 1.4452, 0.018437],
+    "LEG_RIGHT": [0.15, 0.6, 0.05],
+    "BACK_CENTER": [0.0, 1.35, -0.15]
 };
 
 function HologramModel() {
@@ -65,7 +67,7 @@ export default function BodyScanner({ injuries }: BodyScannerProps) {
 
                 <Suspense fallback={null}>
                     {/* Group the model and hotspots together so they share the same coordinate space */}
-                    <group scale={1.5} position={[0, -0.5, 0]}>
+                    <group scale={1.5} position={[0, 0.5, 0]}>
                         <HologramModel />
 
                         {/* Map through the AI-extracted injuries and render the interactive nodes */}

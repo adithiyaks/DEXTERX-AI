@@ -10,7 +10,7 @@ import io
 import re
 import tempfile
 import os
-from vision_engine import process_cctv_footage # Importing your new modular microservice
+from backend.vision_engine import process_cctv_footage # Importing your new modular microservice
 
 # Initialize the classical NLP model (This is what you point out to the judges)
 nlp = spacy.load("en_core_web_sm")
@@ -35,7 +35,7 @@ client = OpenAI(
 
 FAST_FALLBACK_MODELS = [
     "Qwen/Qwen2.5-7B-Instruct",
-    "meta-llama/Llama-3.1-8B-Instruct",
+    
 ]
 
 def call_featherless_chat(messages, max_tokens: int, response_format=None, timeout: float = 60.0):
@@ -211,6 +211,77 @@ CRITICAL RULE FOR DIGITAL CORRELATION: Infer the network of devices, people, and
 DO NOT wrap the output in markdown code blocks. Return ONLY the raw JSON string.
 """
 
+# PDF Upload Endpoint
+@app.post("/api/upload-document")
+async def upload_document(file: UploadFile = File(...)):
+    if not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported.")
+        
+    try:
+        content = await file.read()
+        extracted_text = ""
+        
+        with pdfplumber.open(io.BytesIO(content)) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text()
+                if text:
+                    extracted_text += text + "\n"
+                    
+        if not extracted_text.strip():
+            raise HTTPException(status_code=400, detail="Could not extract any text from the PDF.")
+            
+        print("PDF TEXT EXTRACTED. SENDING TO AI ENGINE...")
+
+        _, raw_output, model_used = call_featherless_chat(
+            messages=[
+                {"role": "system", "content": OMNI_SYSTEM_INSTRUCTION},
+                {"role": "user", "content": f"Analyze this report:\n\n{extracted_text}"}
+            ],
+            max_tokens=4096,
+            response_format={"type": "json_object"},
+            timeout=60.0,
+        )
+        print(f"AI RESPONSE RECEIVED SUCCESSFULLY FROM {model_used}.")
+
+        # --- CLEANING LOGIC ---
+        raw_output = raw_output.replace("```json", "").replace("```", "").strip()
+        start_idx = raw_output.find('{')
+        end_idx = raw_output.rfind('}')
+        
+        if start_idx != -1 and end_idx != -1:
+            raw_output = raw_output[start_idx:end_idx+1]
+        else:
+            raise HTTPException(status_code=500, detail="AI response did not contain a valid JSON object.")
+
+        try:
+            structured_data = json.loads(raw_output)
+            tod_data = structured_data.get("tod_metrics", {})
+            
+            if tod_data and tod_data.get("body_temp_f") is not None:
+                tod_results = calculate_tod_internally(tod_data)
+                structured_data["tod_estimation"] = tod_results
+                
+                math_anomaly = tod_results.get("anomaly_score", 0)
+                ai_risk = structured_data.get("base_risk_score", 0)
+                structured_data["overall_risk_score"] = min(100, max(math_anomaly, ai_risk) + 15)
+            else:
+                structured_data["tod_estimation"] = {
+                    "status": "Skipped",
+                    "reason": "Non-biological document detected. Time of death calculations bypassed.",
+                    "investigative_flags": []
+                }
+                structured_data["overall_risk_score"] = structured_data.get("base_risk_score", 0)
+                
+            return structured_data
+            
+        except json.JSONDecodeError:
+            print("FAILED TO PARSE JSON. RAW OUTPUT WAS:")
+            print(raw_output)
+            raise HTTPException(status_code=500, detail="AI returned malformed data. Please try again.")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Text Input Endpoint
 @app.post("/api/analyze-report")
 async def analyze_report(request: ReportRequest):
@@ -220,7 +291,7 @@ async def analyze_report(request: ReportRequest):
                 {"role": "system", "content": OMNI_SYSTEM_INSTRUCTION},
                 {"role": "user", "content": f"Analyze this report:\n\n{request.report_text}"}
             ],
-            max_tokens=2000,
+            max_tokens=4096,
             response_format={"type": "json_object"},
             timeout=60.0,
         )
@@ -337,7 +408,7 @@ async def process_cctv(file: UploadFile = File(...), report_text: str = Form(Non
                 {"role": "system", "content": OMNI_SYSTEM_INSTRUCTION},
                 {"role": "user", "content": combined_prompt}
             ],
-            max_tokens=1800,
+            max_tokens=4096,
             response_format={"type": "json_object"},
             timeout=60.0,
         )

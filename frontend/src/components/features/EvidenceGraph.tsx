@@ -28,7 +28,7 @@ interface GraphData {
   links: Link[];
 }
 
-export function EvidenceGraph() {
+export function EvidenceGraph({ data: propData }: { data?: GraphData }) {
   const [data, setData] = useState<GraphData | null>(null);
   const [loading, setLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,20 +48,25 @@ export function EvidenceGraph() {
     updateDimensions();
     window.addEventListener("resize", updateDimensions);
 
-    // Fetch the correlation matrix from our FastAPI backend
-    fetch("http://127.0.0.1:8000/api/correlate-evidence")
-      .then((res) => res.json())
-      .then((json) => {
-        setData(json);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load correlation graph data:", err);
-        setLoading(false);
-      });
+    if (propData && propData.nodes && propData.nodes.length > 0) {
+      setData(propData);
+      setLoading(false);
+    } else {
+      // Fetch the correlation matrix from our FastAPI backend as a fallback
+      fetch("http://127.0.0.1:8000/api/correlate-evidence")
+        .then((res) => res.json())
+        .then((json) => {
+          setData(json);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to load correlation graph data:", err);
+          setLoading(false);
+        });
+    }
 
     return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
+  }, [propData]);
 
   // Map groups to our enterprise dark theme colors
   const getNodeColor = (group: string) => {

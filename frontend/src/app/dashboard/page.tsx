@@ -7,6 +7,7 @@ import { Maximize, Activity, AlertTriangle, Loader2, Gauge, Scale, Stethoscope, 
 import { TodIntelligencePanel, TodEstimation } from '@/components/features/TodIntelligencePanel';
 import BodyScanner from '@/components/features/BodyScanner';
 import { EvidenceGraph } from '@/components/features/EvidenceGraph';
+import { ForensicMetrics } from '@/components/ForensicMetrics';
 
 interface ForensicData {
   document_category?: string;
@@ -18,17 +19,42 @@ interface ForensicData {
   case_insights?: string[];
   tod_estimation?: TodEstimation;
   confidence_score?: number;
+  overall_risk_score?: number;
+  base_risk_score?: number;
+  digital_correlation?: {
+    nodes: any[];
+    links: any[];
+  };
 }
 
 // Convert string injury patterns to the Injury objects expected by BodyScanner
 function formatInjuries(patterns?: string[]) {
   if (!patterns || patterns.length === 0) return [];
-  const defaultKeys = ["SKULL_FRONT", "CHEST_LEFT", "NECK_RIGHT", "FOREARM_LEFT"];
-  return patterns.map((desc, idx) => ({
-    description: desc,
-    anatomical_key: defaultKeys[idx % defaultKeys.length],
-    severity: "HIGH"
-  }));
+  
+  return patterns.map((desc) => {
+    const text = desc.toLowerCase();
+    let key = "CHEST_LEFT"; // Default fallback
+    
+    if (text.includes("head") || text.includes("skull") || text.includes("brain") || text.includes("face") || text.includes("eye")) {
+      key = "SKULL_FRONT";
+    } else if (text.includes("neck") || text.includes("throat") || text.includes("cervical") || text.includes("strangle")) {
+      key = "NECK_RIGHT";
+    } else if (text.includes("chest") || text.includes("torso") || text.includes("rib") || text.includes("heart") || text.includes("lung") || text.includes("abdomen")) {
+      key = "CHEST_LEFT";
+    } else if (text.includes("arm") || text.includes("hand") || text.includes("forearm") || text.includes("wrist") || text.includes("shoulder") || text.includes("finger")) {
+      key = "FOREARM_LEFT";
+    } else if (text.includes("leg") || text.includes("thigh") || text.includes("knee") || text.includes("foot") || text.includes("ankle")) {
+      key = "LEG_RIGHT";
+    } else if (text.includes("back") || text.includes("spine") || text.includes("lumbar")) {
+      key = "BACK_CENTER";
+    }
+    
+    return {
+      description: desc,
+      anatomical_key: key,
+      severity: "HIGH"
+    };
+  });
 }
 
 export default function DashboardPage() {
@@ -156,10 +182,10 @@ export default function DashboardPage() {
                 <div className="bg-[#111111]/80 backdrop-blur-md border border-[#e83b5b]/30 shadow-[0_0_30px_rgba(232,59,91,0.2)] rounded-[2rem] px-12 py-5 flex flex-col items-center">
                   <div className="flex items-center gap-2 mb-1">
                     <Gauge size={16} className="text-[#e83b5b]" />
-                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">FIR CONFIDENCE SCORE</h3>
+                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">OVERALL RISK SCORE</h3>
                   </div>
                   <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-[#e83b5b] drop-shadow-[0_0_20px_rgba(232,59,91,0.5)]">
-                    {forensicData.confidence_score || 88}%
+                    {forensicData.overall_risk_score ?? forensicData.base_risk_score ?? 88}%
                   </div>
                 </div>
               </div>
@@ -170,7 +196,7 @@ export default function DashboardPage() {
                   <Activity size={16} />
                   <span className="text-[11px] font-bold tracking-widest uppercase">Legal Intelligence Network</span>
                 </div>
-                <EvidenceGraph />
+                <EvidenceGraph data={forensicData.digital_correlation} />
               </div>
             </motion.div>
 
@@ -303,10 +329,10 @@ export default function DashboardPage() {
                 <div className="bg-[#111111]/80 backdrop-blur-md border border-[#e83b5b]/30 shadow-[0_0_30px_rgba(232,59,91,0.2)] rounded-[2rem] px-10 py-5 flex flex-col items-center">
                   <div className="flex items-center gap-2 mb-1">
                     <Gauge size={16} className="text-[#e83b5b]" />
-                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">OVERALL CONFIDENCE SCORE</h3>
+                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">OVERALL RISK SCORE</h3>
                   </div>
                   <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-[#e83b5b] drop-shadow-[0_0_20px_rgba(232,59,91,0.5)]">
-                    {forensicData.confidence_score || 92}%
+                    {forensicData.overall_risk_score ?? forensicData.base_risk_score ?? 92}%
                   </div>
                 </div>
               </div>
@@ -344,8 +370,11 @@ export default function DashboardPage() {
                   {/* Evidence Graph Container */}
                   <div className="h-[250px] w-full rounded-xl overflow-hidden border border-slate-800 bg-[#0a0a0a]/80 shadow-inner relative group">
                      {/* Optional overlay to prevent interaction if desired, or let them interact */}
-                     <EvidenceGraph />
+                     <EvidenceGraph data={forensicData.digital_correlation} />
                   </div>
+
+                  {/* Forensic Data Visualizations */}
+                  <ForensicMetrics forensicData={forensicData} />
 
                   {/* Entities Involved */}
                   {(forensicData.entities_involved?.length ?? 0) > 0 && (
